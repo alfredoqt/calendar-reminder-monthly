@@ -1,9 +1,14 @@
-// @flow strict
+// @flow
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'index.css';
 import App from 'App.react';
+import localeData from 'dayjs/plugin/localeData';
+import dayjs from 'dayjs';
+
+// Add support for locales: weekdays, months, ...
+dayjs.extend(localeData);
 
 const root = document.getElementById('root');
 
