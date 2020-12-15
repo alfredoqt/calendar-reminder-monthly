@@ -1,7 +1,10 @@
-import logo from './logo.svg';
-import './App.css';
+// @flow strict
 
-function App() {
+import * as React from 'react';
+import logo from 'logo.svg';
+import 'App.css';
+
+function App(): React.Node {
   return (
     <div className="App">
       <header className="App-header">
