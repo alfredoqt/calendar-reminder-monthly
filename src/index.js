@@ -16,10 +16,5 @@ const root = document.getElementById('root');
 
 // Check for null or undefined just in case
 if (root != null) {
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    root,
-  );
+  ReactDOM.render(<App />, root);
 }
