@@ -43,7 +43,7 @@ export default function DaysInMonth({navigationDate}: Props): React.Node {
     const date = dayjs(new Date(navigationDate.year(), navigationDate.month(), i));
     days.push(
       <div key={date.valueOf()} className={classes.day}>
-        <Day date={date} />
+        <Day date={date} monthIndex={navigationDate.month()} />
       </div>,
     );
   }
