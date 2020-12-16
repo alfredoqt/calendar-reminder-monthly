@@ -10,6 +10,7 @@ flow-typed
 
 [options]
 module.name_mapper='^\([^\.].*\)$' -> '<PROJECT_ROOT>/src/\1'
+types_first=false
 
 [strict]
 nonstrict-import

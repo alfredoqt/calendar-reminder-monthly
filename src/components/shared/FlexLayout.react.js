@@ -1,7 +1,7 @@
 // @flow
 
 import * as React from 'react';
-import {createUseStyles} from 'react-jss';
+import {makeStyles} from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 type Align = 'start' | 'end' | 'center' | 'baseline' | 'stretch';
@@ -9,7 +9,7 @@ type Direction = 'horizontal' | 'horizontal-reverse' | 'vertical' | 'vertical-re
 type Justify = 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly';
 type Wrap = 'nowrap' | 'wrap' | 'wrap-reverse';
 
-const useStyles = createUseStyles({
+const useStyles = makeStyles({
   root: {
     display: 'flex',
   },

@@ -1,13 +1,17 @@
 // @flow
 
 import * as React from 'react';
-import DaysOfWeek from 'components/calendar/DaysOfWeek.react';
+import Calendar from 'components/calendar/Calendar.react';
+import theme from 'constants/theme';
+import {ThemeProvider} from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 function App(): React.Node {
   return (
-    <div>
-      <DaysOfWeek />
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Calendar />
+    </ThemeProvider>
   );
 }
 
