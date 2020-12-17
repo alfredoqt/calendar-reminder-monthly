@@ -14,6 +14,9 @@ import dayjs from 'dayjs';
 export default function Calendar(): React.Node {
   // Controls where we are looking at the calendar
   const [navigationDate, setNavigationDate] = useState(getFirstDayOfMonth(dayjs()));
+  const date1 = dayjs('2019-01-25');
+  const date2 = dayjs('2019-01-04');
+  console.log(date1.diff(date2, 'day')); // 20214000000 default milliseconds
   return (
     <div>
       <MonthNavigator

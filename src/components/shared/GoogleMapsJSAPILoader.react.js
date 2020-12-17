@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import GoogleMapsJSAPIContext from 'components/shared/GoogleMapsJSAPIContext.react';
-import GoogleMapsService from 'utils/GoogleMapsService';
+import GoogleMapsService from 'services/GoogleMapsService';
 
 type Props = $ReadOnly<{
   children: React.Node,
