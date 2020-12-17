@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import GoogleMapsJSAPIContext from 'components/shared/GoogleMapsJSAPIContext.react';
+import GoogleMapsService from 'utils/GoogleMapsService';
 
 type Props = $ReadOnly<{
   children: React.Node,
@@ -39,7 +40,7 @@ export default function GoogleMapsJSAPILoader({children, fallback}: Props): Reac
   }
 
   return (
-    <GoogleMapsJSAPIContext.Provider value={google}>
+    <GoogleMapsJSAPIContext.Provider value={new GoogleMapsService(google)}>
       {children}
     </GoogleMapsJSAPIContext.Provider>
   );

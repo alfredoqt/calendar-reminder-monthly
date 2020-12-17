@@ -1,5 +1,10 @@
 // @flow
 
+/**
+ * Basically groups many fn calls into one
+ * It will only be called if the last debounced fn call was made
+ * more than wait ms
+ */
 export default function debounce<Args: $ReadOnlyArray<mixed>>(
   fn: (...args: Args) => mixed,
   wait: number,

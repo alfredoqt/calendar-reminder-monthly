@@ -1,7 +1,6 @@
 // @flow
 
 import * as React from 'react';
-import {useContext} from 'react';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -11,7 +10,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import GoogleMapsJSAPIContext from 'components/shared/GoogleMapsJSAPIContext.react';
+import CitySearchAutocomplete from 'components/reminder/CitySearchAutocomplete.react';
 
 // Leaving this components here instead of their separate files
 // since they are pretty small
@@ -68,26 +67,11 @@ type Props = $ReadOnly<{
  * Renders the add/update reminder dialog
  */
 export default function ReminderDialog({open, onClose}: Props): React.Node {
-  const google = useContext(GoogleMapsJSAPIContext);
-  console.log(google);
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle onClose={onClose}>Modal title</DialogTitle>
-      <DialogContent dividers>
-        <Typography gutterBottom>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac
-          facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac,
-          vestibulum at eros.
-        </Typography>
-        <Typography gutterBottom>
-          Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus
-          sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
-        </Typography>
-        <Typography gutterBottom>
-          Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna,
-          vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper
-          nulla non metus auctor fringilla.
-        </Typography>
+      <DialogContent>
+        <CitySearchAutocomplete />
       </DialogContent>
       <DialogActions>
         <Button color="primary" onClick={onClose}>
