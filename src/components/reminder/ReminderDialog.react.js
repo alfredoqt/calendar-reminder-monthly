@@ -1,6 +1,9 @@
 // @flow
 
+import type {PlacePrediction} from 'constants/GoogleAPITypes';
+
 import * as React from 'react';
+import {useState} from 'react';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -11,6 +14,9 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import CitySearchAutocomplete from 'components/reminder/CitySearchAutocomplete.react';
+import {useDispatch, useMappedState} from 'stores/hooks/CalendarStoreHooks';
+import FlexLayout from 'components/shared/FlexLayout.react';
+import WeatherOnCity from 'components/reminder/WeatherOnCity.react';
 
 // Leaving this components here instead of their separate files
 // since they are pretty small
@@ -58,20 +64,51 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
+const useStyles = makeStyles((theme) => ({
+  form: {
+    flexBasis: '75%',
+    maxWidth: '75%',
+    marginRight: theme.spacing(2),
+  },
+  weather: {
+    flexBasis: '25%',
+    maxWidth: '25%',
+  },
+}));
+
 type Props = $ReadOnly<{
   open: boolean,
   onClose: () => void,
 }>;
 
+type ReminderFormFields = {
+  city: ?PlacePrediction,
+};
+
 /**
  * Renders the add/update reminder dialog
  */
 export default function ReminderDialog({open, onClose}: Props): React.Node {
+  const classes = useStyles();
+  const selectedDate = useMappedState((state) => state.currentReminderData.selectedDate);
+  const [fields, setFields] = useState<ReminderFormFields>({
+    city: null,
+  });
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle onClose={onClose}>Modal title</DialogTitle>
       <DialogContent>
-        <CitySearchAutocomplete />
+        <FlexLayout>
+          <div className={classes.form}>
+            <CitySearchAutocomplete
+              onChange={(value) => setFields({...fields, city: value})}
+            />
+          </div>
+          <div className={classes.weather}>
+            <WeatherOnCity selectedDate={selectedDate} city={fields.city} />
+          </div>
+        </FlexLayout>
       </DialogContent>
       <DialogActions>
         <Button color="primary" onClick={onClose}>

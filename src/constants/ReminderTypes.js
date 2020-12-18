@@ -1,5 +1,7 @@
 // @flow
 
+import type {PlacePrediction} from 'constants/GoogleAPITypes';
+
 import dayjs from 'dayjs';
 
 // Support colors
@@ -16,7 +18,7 @@ export type Reminder = {
   name: string,
   date: dayjs.Dayjs,
   color: ReminderColor,
-  cityName: string,
+  city: PlacePrediction,
   // We might not have a weather for the reminder
   weather: ?ReminderWeather,
 };

@@ -95,15 +95,13 @@ export default function CalendarRemindersReducer(
           name: action.payload.name,
           date: action.payload.date.clone(),
           color: action.payload.color,
-          cityName: action.payload.cityName,
-          weather:
-            action.payload.weather != null
-              ? {
-                  averageTemperature: action.payload.weather.averageTemperature,
-                  icon: action.payload.weather.icon,
-                  weather: action.payload.weather.weather,
-                }
-              : null,
+          city: {
+            description: action.payload.city.description,
+            place_id: action.payload.city.place_id,
+            // Shallow copy
+            structured_formatting: {...action.payload.city.structured_formatting},
+          },
+          weather: action.payload.weather != null ? {...action.payload.weather} : null,
         }),
       };
     default:

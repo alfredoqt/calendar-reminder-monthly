@@ -17,7 +17,7 @@ type StructuredFormatting = {
 export type PlacePrediction = {
   description: string,
   place_id: string,
-  structured_formatting?: StructuredFormatting,
+  structured_formatting: StructuredFormatting,
 };
 
 export type PlaceDetailed = {

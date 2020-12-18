@@ -10,7 +10,11 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import debounce from 'utils/debounce';
 
-export default function CitySearchAutocomplete(): React.Node {
+type Props = $ReadOnly<{
+  onChange: (value: PlacePrediction) => void,
+}>;
+
+export default function CitySearchAutocomplete({onChange}: Props): React.Node {
   const google = useContext(GoogleMapsJSAPIContext);
   const [value, setValue] = useState(null);
   const [, setInputValue] = useState('');
@@ -52,6 +56,7 @@ export default function CitySearchAutocomplete(): React.Node {
       value={value}
       onChange={(_, newValue: PlacePrediction) => {
         setValue(newValue);
+        onChange(newValue);
       }}
       onInputChange={(_, newInputValue) => {
         setInputValue(newInputValue);
@@ -64,10 +69,10 @@ export default function CitySearchAutocomplete(): React.Node {
         return (
           <div>
             <span style={{fontWeight: 700}}>
-              {option.structured_formatting?.main_text}
+              {option.structured_formatting.main_text}
             </span>
             <Typography variant="body2" color="textSecondary">
-              {option.structured_formatting?.secondary_text}
+              {option.structured_formatting.secondary_text}
             </Typography>
           </div>
         );

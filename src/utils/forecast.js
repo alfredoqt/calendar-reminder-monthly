@@ -19,18 +19,14 @@ export async function fetchForecastForDate(
     return Promise.resolve(null);
   }
 
-  try {
-    const forecast = await fetchForecast(q, differenceInDays + 1);
-    // Extract the forecast for the requested date
-    const forecastForDay = forecast.list[differenceInDays];
-    // Check for null or undefined
-    if (forecastForDay == null) {
-      return null;
-    }
-    return forecastForDay;
-  } catch {
-    return Promise.resolve(null);
+  const forecast = await fetchForecast(q, differenceInDays + 1);
+  // Extract the forecast for the requested date
+  const forecastForDay = forecast.list[differenceInDays];
+  // Check for null or undefined
+  if (forecastForDay == null) {
+    return null;
   }
+  return forecastForDay;
 }
 
 export function getIconSrc(icon: string): string {
