@@ -1,25 +1,23 @@
 // @flow
 
 import * as React from 'react';
-import Calendar from 'components/calendar/Calendar.react';
 import theme from 'constants/theme';
 import {ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import ReminderDialog from 'components/reminder/ReminderDialog.react';
-import useBoolean from 'hooks/useBoolean';
 import GoogleMapsJSAPILoader from 'components/shared/GoogleMapsJSAPILoader.react';
+import {StoreContext} from 'stores/hooks/CalendarStoreHooks';
+import CalendarStore from 'stores/CalendarStore';
+import CalendarApp from 'components/CalendarApp.react';
 
-function App(): React.Node {
-  const {value: open, setFalse} = useBoolean(true);
+export default function App(): React.Node {
   return (
     <GoogleMapsJSAPILoader fallback={<p>Loading Maps JS API...</p>}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Calendar />
-        <ReminderDialog open={open} onClose={setFalse} />
-      </ThemeProvider>
+      <StoreContext.Provider value={CalendarStore}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <CalendarApp />
+        </ThemeProvider>
+      </StoreContext.Provider>
     </GoogleMapsJSAPILoader>
   );
 }
-
-export default App;

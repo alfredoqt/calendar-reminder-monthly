@@ -44,12 +44,13 @@ type Props = $ReadOnly<{
   date: dayjs.Dayjs,
   // Index of the navigation month
   monthIndex: number,
+  onSelectActiveDate: (date: dayjs.Dayjs) => void,
 }>;
 
-export default function Day({date, monthIndex}: Props): React.Node {
+export default function Day({date, monthIndex, onSelectActiveDate}: Props): React.Node {
   const classes = useStyles({date, monthIndex});
   return (
-    <ButtonBase className={classes.root}>
+    <ButtonBase className={classes.root} onClick={() => onSelectActiveDate(date)}>
       <FlexLayout className={classes.layout} direction="vertical">
         <Typography
           className={classes.dayText}

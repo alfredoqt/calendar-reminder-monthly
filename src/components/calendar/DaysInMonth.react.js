@@ -18,12 +18,16 @@ const useStyles = makeStyles({
 type Props = $ReadOnly<{
   // Will always be the first day of the selected month
   navigationDate: dayjs.Dayjs,
+  onSelectActiveDate: (date: dayjs.Dayjs) => void,
 }>;
 
 /**
  * Represents the grid of days in the calendar
  */
-export default function DaysInMonth({navigationDate}: Props): React.Node {
+export default function DaysInMonth({
+  navigationDate,
+  onSelectActiveDate,
+}: Props): React.Node {
   const classes = useStyles();
   // Start day of the grid. It can be negative or zero
   // if it has a neighboring month
@@ -43,7 +47,11 @@ export default function DaysInMonth({navigationDate}: Props): React.Node {
     const date = dayjs(new Date(navigationDate.year(), navigationDate.month(), i));
     days.push(
       <div key={date.valueOf()} className={classes.day}>
-        <Day date={date} monthIndex={navigationDate.month()} />
+        <Day
+          date={date}
+          monthIndex={navigationDate.month()}
+          onSelectActiveDate={onSelectActiveDate}
+        />
       </div>,
     );
   }

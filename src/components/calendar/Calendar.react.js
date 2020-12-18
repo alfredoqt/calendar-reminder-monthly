@@ -8,15 +8,17 @@ import MonthNavigator from 'components/calendar/MonthNavigator.react';
 import {getFirstDayOfMonth} from 'utils/dates';
 import dayjs from 'dayjs';
 
+type Props = $ReadOnly<{
+  onSelectActiveDate: (date: dayjs.Dayjs) => void,
+}>;
+
 /**
  * Holds the whole calendar component
  */
-export default function Calendar(): React.Node {
+export default function Calendar({onSelectActiveDate}: Props): React.Node {
   // Controls where we are looking at the calendar
   const [navigationDate, setNavigationDate] = useState(getFirstDayOfMonth(dayjs()));
-  const date1 = dayjs('2019-01-25');
-  const date2 = dayjs('2019-01-04');
-  console.log(date1.diff(date2, 'day')); // 20214000000 default milliseconds
+
   return (
     <div>
       <MonthNavigator
@@ -24,7 +26,10 @@ export default function Calendar(): React.Node {
         setNavigationDate={setNavigationDate}
       />
       <DaysOfWeek />
-      <DaysInMonth navigationDate={navigationDate} />
+      <DaysInMonth
+        navigationDate={navigationDate}
+        onSelectActiveDate={onSelectActiveDate}
+      />
     </div>
   );
 }

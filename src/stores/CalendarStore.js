@@ -7,7 +7,7 @@ import type {Store} from 'redux';
 
 import CalendarCurrentReminderDataReducer from 'reducers/CalendarCurrentReminderDataReducer';
 import CalendarRemindersReducer from 'reducers/CalendarRemindersReducer';
-import {combineReducers, createStore, applyMiddleware} from 'redux';
+import {combineReducers, createStore, applyMiddleware, compose} from 'redux';
 import thunk from 'redux-thunk';
 
 export type CalendarStoreState = {
@@ -27,6 +27,13 @@ const rootReducer: CalendarRootReducerType = combineReducers({
   reminders: CalendarRemindersReducer,
 });
 
-const store: CalendarStore = createStore(rootReducer, applyMiddleware(thunk));
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store: CalendarStore = createStore(
+  rootReducer,
+  process.env.NODE_ENV === 'production'
+    ? applyMiddleware(thunk)
+    : composeEnhancers(applyMiddleware(thunk)),
+);
 
 export default store;
