@@ -63,7 +63,13 @@ export default function CitySearchAutocomplete({onChange}: Props): React.Node {
         debouncedSearch(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Search for a city" variant="outlined" fullWidth />
+        <TextField
+          {...params}
+          label="Search for a city"
+          variant="outlined"
+          fullWidth
+          margin="dense"
+        />
       )}
       renderOption={(option: PlacePrediction) => {
         return (

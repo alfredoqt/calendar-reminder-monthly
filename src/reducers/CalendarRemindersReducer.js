@@ -101,7 +101,14 @@ export default function CalendarRemindersReducer(
             // Shallow copy
             structured_formatting: {...action.payload.city.structured_formatting},
           },
-          weather: action.payload.weather != null ? {...action.payload.weather} : null,
+          forecast:
+            action.payload.forecast != null
+              ? {
+                  temp: {...action.payload.forecast.temp},
+                  // Deep copy for immutability
+                  weather: action.payload.forecast.weather.map((el) => ({...el})),
+                }
+              : null,
         }),
       };
     default:

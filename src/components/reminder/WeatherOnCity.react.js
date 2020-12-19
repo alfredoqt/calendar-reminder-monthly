@@ -28,10 +28,15 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = $ReadOnly<{
   city: ?PlacePrediction,
+  onChange: (forecast: ?OpenWeatherForecastDay) => void,
   selectedDate: ?dayjs.Dayjs,
 }>;
 
-export default function WeatherOnCity({city, selectedDate}: Props): React.Node {
+export default function WeatherOnCity({
+  city,
+  onChange,
+  selectedDate,
+}: Props): React.Node {
   const classes = useStyles();
   const [forecast, setForecast] = useState<?OpenWeatherForecastDay>(null);
   const [error, setError] = useState<?string>(null);
@@ -45,6 +50,7 @@ export default function WeatherOnCity({city, selectedDate}: Props): React.Node {
             selectedDate,
           );
           setForecast(result);
+          onChange(result);
         } catch {
           setError('Error fetching weather');
         }

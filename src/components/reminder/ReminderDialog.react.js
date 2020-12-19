@@ -1,6 +1,8 @@
 // @flow
 
 import type {PlacePrediction} from 'constants/GoogleAPITypes';
+import type {OpenWeatherForecastDay} from 'constants/OpenWeatherTypes';
+import type {ReminderColor} from 'constants/ReminderTypes';
 
 import * as React from 'react';
 import {useState} from 'react';
@@ -12,11 +14,14 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CitySearchAutocomplete from 'components/reminder/CitySearchAutocomplete.react';
 import {useDispatch, useMappedState} from 'stores/hooks/CalendarStoreHooks';
 import FlexLayout from 'components/shared/FlexLayout.react';
 import WeatherOnCity from 'components/reminder/WeatherOnCity.react';
+import {REMINDER_COLORS} from 'constants/ReminderTypes';
+import ReminderColorSelect from 'components/reminder/ReminderColorSelect.react';
 
 // Leaving this components here instead of their separate files
 // since they are pretty small
@@ -83,6 +88,9 @@ type Props = $ReadOnly<{
 
 type ReminderFormFields = {
   city: ?PlacePrediction,
+  forecast: ?OpenWeatherForecastDay,
+  name: string,
+  color: ReminderColor,
 };
 
 /**
@@ -93,6 +101,9 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
   const selectedDate = useMappedState((state) => state.currentReminderData.selectedDate);
   const [fields, setFields] = useState<ReminderFormFields>({
     city: null,
+    forecast: null,
+    name: '',
+    color: REMINDER_COLORS.blue,
   });
 
   return (
@@ -101,12 +112,32 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
       <DialogContent>
         <FlexLayout>
           <div className={classes.form}>
+            <TextField
+              id="reminder-name"
+              label="Name"
+              variant="outlined"
+              fullWidth
+              margin="dense"
+              inputProps={{
+                maxLength: 30,
+              }}
+              value={fields.name}
+              onChange={(e) => setFields({...fields, name: e.target.value})}
+            />
             <CitySearchAutocomplete
               onChange={(value) => setFields({...fields, city: value})}
             />
+            <ReminderColorSelect
+              value={fields.color}
+              onChange={(value) => setFields({...fields, color: value})}
+            />
           </div>
           <div className={classes.weather}>
-            <WeatherOnCity selectedDate={selectedDate} city={fields.city} />
+            <WeatherOnCity
+              selectedDate={selectedDate}
+              city={fields.city}
+              onChange={(value) => setFields({...fields, forecast: value})}
+            />
           </div>
         </FlexLayout>
       </DialogContent>
