@@ -5,7 +5,7 @@ import type {OpenWeatherForecastDay} from 'constants/OpenWeatherTypes';
 import type {ReminderColor} from 'constants/ReminderTypes';
 
 import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,6 +22,9 @@ import FlexLayout from 'components/shared/FlexLayout.react';
 import WeatherOnCity from 'components/reminder/WeatherOnCity.react';
 import {REMINDER_COLORS} from 'constants/ReminderTypes';
 import ReminderColorSelect from 'components/reminder/ReminderColorSelect.react';
+import ReminderTimeSelect from 'components/reminder/ReminderTimeSelect.react';
+import dayjs from 'dayjs';
+import nullthrows from 'utils/nullthrows';
 
 // Leaving this components here instead of their separate files
 // since they are pretty small
@@ -91,6 +94,7 @@ type ReminderFormFields = {
   forecast: ?OpenWeatherForecastDay,
   name: string,
   color: ReminderColor,
+  date: ?dayjs.Dayjs,
 };
 
 /**
@@ -104,7 +108,14 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
     forecast: null,
     name: '',
     color: REMINDER_COLORS.blue,
+    date: null,
   });
+
+  useEffect(() => {
+    if (selectedDate != null) {
+      setFields({...fields, date: selectedDate.hour(0).minute(0).second(0)});
+    }
+  }, [selectedDate]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -112,6 +123,9 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
       <DialogContent>
         <FlexLayout>
           <div className={classes.form}>
+            <Typography gutterBottom>{`Date: ${
+              selectedDate != null ? selectedDate.format('LL') : ''
+            }`}</Typography>
             <TextField
               id="reminder-name"
               label="Name"
@@ -124,6 +138,13 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
               value={fields.name}
               onChange={(e) => setFields({...fields, name: e.target.value})}
             />
+            {fields.date != null && selectedDate != null ? (
+              <ReminderTimeSelect
+                selectedDate={selectedDate.hour(0).minute(0).second(0)}
+                value={nullthrows(fields.date)}
+                onChange={(value) => setFields({...fields, date: value})}
+              />
+            ) : null}
             <CitySearchAutocomplete
               onChange={(value) => setFields({...fields, city: value})}
             />
