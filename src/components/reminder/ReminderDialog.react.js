@@ -25,6 +25,8 @@ import ReminderColorSelect from 'components/reminder/ReminderColorSelect.react';
 import ReminderTimeSelect from 'components/reminder/ReminderTimeSelect.react';
 import dayjs from 'dayjs';
 import nullthrows from 'utils/nullthrows';
+import {v4 as uuidv4} from 'uuid';
+import {addReminder} from 'actions/CalendarRemindersActions';
 
 // Leaving this components here instead of their separate files
 // since they are pretty small
@@ -102,6 +104,7 @@ type ReminderFormFields = {
  */
 export default function ReminderDialog({open, onClose}: Props): React.Node {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const selectedDate = useMappedState((state) => state.currentReminderData.selectedDate);
   const [fields, setFields] = useState<ReminderFormFields>({
     city: null,
@@ -110,12 +113,79 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
     color: REMINDER_COLORS.blue,
     date: null,
   });
+  const [fieldErrors, setFieldErrors] = useState<{
+    [$Keys<ReminderFormFields>]: ?string,
+  }>({
+    city: null,
+    forecast: null,
+    name: null,
+    color: null,
+    date: null,
+  });
 
   useEffect(() => {
     if (selectedDate != null) {
       setFields({...fields, date: selectedDate.hour(0).minute(0).second(0)});
     }
   }, [selectedDate]);
+
+  // useCallback unnecessary due to repetitive memoized function creation
+  const onSave = () => {
+    let errors: {
+      [$Keys<ReminderFormFields>]: ?string,
+    } = {
+      city: null,
+      forecast: null,
+      name: null,
+      color: null,
+      date: null,
+    };
+
+    if (fields.city == null) {
+      errors = {...errors, city: 'The city must not be empty'};
+    }
+
+    if (fields.name === '') {
+      errors = {...errors, name: 'Name must not be empty'};
+    }
+
+    if (fields.name.length > 30) {
+      errors = {...errors, name: 'Length must not be greater than 30'};
+    }
+
+    setFieldErrors(errors);
+
+    const noNullErrors = Object.keys(errors).reduce((acc, current) => {
+      if (errors[current] == null) {
+        return acc;
+      }
+      acc[current] = errors[current];
+      return acc;
+    }, {});
+
+    if (Object.keys(noNullErrors).length !== 0) {
+      return;
+    }
+
+    setFields({
+      city: null,
+      forecast: null,
+      name: '',
+      color: REMINDER_COLORS.blue,
+      date: null,
+    });
+    dispatch(
+      addReminder({
+        id: uuidv4(),
+        city: nullthrows(fields.city),
+        date: nullthrows(fields.date),
+        color: fields.color,
+        name: fields.name,
+        forecast: fields.forecast,
+      }),
+    );
+    onClose();
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -137,6 +207,8 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
               }}
               value={fields.name}
               onChange={(e) => setFields({...fields, name: e.target.value})}
+              error={fieldErrors.name != null}
+              helperText={fieldErrors.name}
             />
             {fields.date != null && selectedDate != null ? (
               <ReminderTimeSelect
@@ -146,6 +218,8 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
               />
             ) : null}
             <CitySearchAutocomplete
+              helperText={fieldErrors.city}
+              error={fieldErrors.city != null}
               onChange={(value) => setFields({...fields, city: value})}
             />
             <ReminderColorSelect
@@ -163,7 +237,7 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
         </FlexLayout>
       </DialogContent>
       <DialogActions>
-        <Button color="primary" onClick={onClose}>
+        <Button color="primary" onClick={onSave}>
           Save changes
         </Button>
       </DialogActions>

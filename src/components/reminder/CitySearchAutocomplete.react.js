@@ -12,9 +12,15 @@ import debounce from 'utils/debounce';
 
 type Props = $ReadOnly<{
   onChange: (value: PlacePrediction) => void,
+  helperText: ?React.Node,
+  error: boolean,
 }>;
 
-export default function CitySearchAutocomplete({onChange}: Props): React.Node {
+export default function CitySearchAutocomplete({
+  onChange,
+  helperText,
+  error,
+}: Props): React.Node {
   const google = useContext(GoogleMapsJSAPIContext);
   const [value, setValue] = useState(null);
   const [, setInputValue] = useState('');
@@ -69,6 +75,8 @@ export default function CitySearchAutocomplete({onChange}: Props): React.Node {
           variant="outlined"
           fullWidth
           margin="dense"
+          helperText={helperText}
+          error={error}
         />
       )}
       renderOption={(option: PlacePrediction) => {
