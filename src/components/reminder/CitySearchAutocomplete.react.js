@@ -14,15 +14,16 @@ type Props = $ReadOnly<{
   onChange: (value: PlacePrediction) => void,
   helperText: ?React.Node,
   error: boolean,
+  value: ?PlacePrediction,
 }>;
 
 export default function CitySearchAutocomplete({
   onChange,
   helperText,
   error,
+  value,
 }: Props): React.Node {
   const google = useContext(GoogleMapsJSAPIContext);
-  const [value, setValue] = useState(null);
   const [, setInputValue] = useState('');
   const [options, setOptions] = useState<Array<PlacePrediction>>([]);
 
@@ -61,7 +62,6 @@ export default function CitySearchAutocomplete({
       filterSelectedOptions
       value={value}
       onChange={(_, newValue: PlacePrediction) => {
-        setValue(newValue);
         onChange(newValue);
       }}
       onInputChange={(_, newInputValue) => {

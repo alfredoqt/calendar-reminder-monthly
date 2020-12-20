@@ -5,7 +5,7 @@ import type {OpenWeatherForecastDay} from 'constants/OpenWeatherTypes';
 import type {ReminderColor} from 'constants/ReminderTypes';
 
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -26,7 +26,12 @@ import ReminderTimeSelect from 'components/reminder/ReminderTimeSelect.react';
 import dayjs from 'dayjs';
 import nullthrows from 'utils/nullthrows';
 import {v4 as uuidv4} from 'uuid';
-import {addReminder} from 'actions/CalendarRemindersActions';
+import {
+  addReminder,
+  updateReminder,
+  removeReminder,
+} from 'actions/CalendarRemindersActions';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 // Leaving this components here instead of their separate files
 // since they are pretty small
@@ -34,26 +39,42 @@ const useTitleStyles = makeStyles((theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
+    display: 'flex',
+    alignItems: 'center',
   },
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
+  title: {
+    flexGrow: 1,
+  },
+  button: {
+    marginRight: theme.spacing(1),
   },
 }));
 
 type TitleProps = $ReadOnly<{
   children: React.Node,
   onClose: () => void,
+  enableDelete: boolean,
+  onDelete: () => void,
 }>;
 
-function DialogTitle({children, onClose}: TitleProps): React.Node {
+function DialogTitle({
+  children,
+  enableDelete = false,
+  onClose,
+  onDelete,
+}: TitleProps): React.Node {
   const classes = useTitleStyles();
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
-      <Typography variant="h6">{children}</Typography>
-      <IconButton className={classes.closeButton} onClick={onClose}>
+      <Typography className={classes.title} variant="h6">
+        {children}
+      </Typography>
+      {enableDelete ? (
+        <IconButton className={classes.button} onClick={onDelete}>
+          <DeleteIcon />
+        </IconButton>
+      ) : null}
+      <IconButton className={classes.button} onClick={onClose}>
         <CloseIcon />
       </IconButton>
     </MuiDialogTitle>
@@ -106,6 +127,9 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
   const classes = useStyles();
   const dispatch = useDispatch();
   const selectedDate = useMappedState((state) => state.currentReminderData.selectedDate);
+  const selectedReminder = useMappedState(
+    (state) => state.currentReminderData.selectedReminder,
+  );
   const [fields, setFields] = useState<ReminderFormFields>({
     city: null,
     forecast: null,
@@ -126,8 +150,34 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
   useEffect(() => {
     if (selectedDate != null) {
       setFields({...fields, date: selectedDate.hour(0).minute(0).second(0)});
+    } else if (selectedReminder != null) {
+      setFields({
+        city: selectedReminder.city,
+        forecast: selectedReminder.forecast,
+        name: selectedReminder.name,
+        color: selectedReminder.color,
+        date: selectedReminder.date.hour(0).minute(0).second(0),
+      });
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedReminder]);
+
+  const handleClose = useCallback(() => {
+    setFields({
+      city: null,
+      forecast: null,
+      name: '',
+      color: REMINDER_COLORS.blue,
+      date: null,
+    });
+    onClose();
+  }, [setFields, onClose]);
+
+  const onDelete = useCallback(() => {
+    if (selectedReminder != null) {
+      dispatch(removeReminder(selectedReminder.id));
+      handleClose();
+    }
+  }, [dispatch, selectedReminder]);
 
   // useCallback unnecessary due to repetitive memoized function creation
   const onSave = () => {
@@ -167,34 +217,50 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
       return;
     }
 
-    setFields({
-      city: null,
-      forecast: null,
-      name: '',
-      color: REMINDER_COLORS.blue,
-      date: null,
-    });
-    dispatch(
-      addReminder({
-        id: uuidv4(),
-        city: nullthrows(fields.city),
-        date: nullthrows(fields.date),
-        color: fields.color,
-        name: fields.name,
-        forecast: fields.forecast,
-      }),
-    );
-    onClose();
+    if (selectedReminder != null) {
+      dispatch(
+        updateReminder({
+          id: selectedReminder.id,
+          city: nullthrows(fields.city),
+          date: nullthrows(fields.date),
+          color: fields.color,
+          name: fields.name,
+          forecast: fields.forecast,
+        }),
+      );
+    } else {
+      dispatch(
+        addReminder({
+          id: uuidv4(),
+          city: nullthrows(fields.city),
+          date: nullthrows(fields.date),
+          color: fields.color,
+          name: fields.name,
+          forecast: fields.forecast,
+        }),
+      );
+    }
+    handleClose();
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle onClose={onClose}>Modal title</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth>
+      <DialogTitle
+        enableDelete={selectedReminder != null}
+        onClose={handleClose}
+        onDelete={onDelete}
+      >
+        {selectedReminder != null ? 'Update Reminder' : 'Add Reminder'}
+      </DialogTitle>
       <DialogContent>
         <FlexLayout>
           <div className={classes.form}>
             <Typography gutterBottom>{`Date: ${
-              selectedDate != null ? selectedDate.format('LL') : ''
+              selectedReminder != null || selectedDate != null
+                ? selectedReminder != null
+                  ? selectedReminder.date.format('LL')
+                  : nullthrows(selectedDate?.format('LL'))
+                : ''
             }`}</Typography>
             <TextField
               id="reminder-name"
@@ -210,14 +276,20 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
               error={fieldErrors.name != null}
               helperText={fieldErrors.name}
             />
-            {fields.date != null && selectedDate != null ? (
+            {fields.date != null &&
+            (selectedDate != null || selectedReminder?.date != null) ? (
               <ReminderTimeSelect
-                selectedDate={selectedDate.hour(0).minute(0).second(0)}
+                selectedDate={
+                  selectedReminder?.date != null
+                    ? nullthrows(selectedReminder?.date.hour(0).minute(0).second(0))
+                    : nullthrows(selectedDate?.hour(0).minute(0).second(0))
+                }
                 value={nullthrows(fields.date)}
                 onChange={(value) => setFields({...fields, date: value})}
               />
             ) : null}
             <CitySearchAutocomplete
+              value={fields.city}
               helperText={fieldErrors.city}
               error={fieldErrors.city != null}
               onChange={(value) => setFields({...fields, city: value})}

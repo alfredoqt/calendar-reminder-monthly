@@ -14,10 +14,14 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     width: '100%',
     justifyContent: 'flex-start',
+    padding: theme.spacing(0.25),
   },
   icon: {
     width: 24,
     height: 24,
+  },
+  date: {
+    marginRight: theme.spacing(0.25),
   },
 }));
 
@@ -37,7 +41,7 @@ export default function RemindersListItem({reminder, onSelect}: Props): React.No
       }}
     >
       <FlexLayout align="center">
-        <span>{reminder.date.format('LT')}</span>
+        <span className={classes.date}>{reminder.date.format('LT')}</span>
         {reminder.forecast != null ? (
           <img
             alt={reminder.forecast.weather[0].main}
