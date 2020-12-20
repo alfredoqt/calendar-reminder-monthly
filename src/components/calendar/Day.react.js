@@ -12,6 +12,8 @@ import useSortedRemindersInDay from 'stores/hooks/useSortedRemindersInDay';
 import RemindersList from 'components/calendar/RemindersList.react';
 import {useDispatch} from 'stores/hooks/CalendarStoreHooks';
 import {setSelectedReminder} from 'actions/CalendarCurrentReminderDataActions';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -40,8 +42,10 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   dayText: {
-    alignSelf: 'flex-end',
     fontWeight: 700,
+  },
+  delete: {
+    flexGrow: 1,
   },
 }));
 
@@ -50,9 +54,15 @@ type Props = $ReadOnly<{
   // Index of the navigation month
   monthIndex: number,
   onSelectActiveDate: (date: dayjs.Dayjs) => void,
+  onDeleteReminders: (date: dayjs.Dayjs) => void,
 }>;
 
-export default function Day({date, monthIndex, onSelectActiveDate}: Props): React.Node {
+export default function Day({
+  date,
+  monthIndex,
+  onSelectActiveDate,
+  onDeleteReminders,
+}: Props): React.Node {
   const classes = useStyles({date, monthIndex});
   const reminders = useSortedRemindersInDay(date);
   const dispatch = useDispatch();
@@ -67,15 +77,25 @@ export default function Day({date, monthIndex, onSelectActiveDate}: Props): Reac
   return (
     <ButtonBase className={classes.root} onClick={() => onSelectActiveDate(date)}>
       <FlexLayout className={classes.layout} direction="vertical">
-        <Typography
-          className={classes.dayText}
-          variant="subtitle2"
-          align="right"
-          color="inherit"
-          gutterBottom
-        >
-          {date.date()}
-        </Typography>
+        <FlexLayout className={classes.layout} align="center" justify="between">
+          <IconButton
+            disabled={reminders.size === 0}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteReminders(date);
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+          <Typography
+            className={classes.dayText}
+            variant="subtitle2"
+            align="right"
+            color="inherit"
+          >
+            {date.date()}
+          </Typography>
+        </FlexLayout>
         <RemindersList reminders={reminders.toArray()} onSelect={onSelect} />
       </FlexLayout>
     </ButtonBase>

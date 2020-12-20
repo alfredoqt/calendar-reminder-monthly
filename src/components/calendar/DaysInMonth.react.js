@@ -19,6 +19,7 @@ type Props = $ReadOnly<{
   // Will always be the first day of the selected month
   navigationDate: dayjs.Dayjs,
   onSelectActiveDate: (date: dayjs.Dayjs) => void,
+  onDeleteReminders: (date: dayjs.Dayjs) => void,
 }>;
 
 /**
@@ -27,6 +28,7 @@ type Props = $ReadOnly<{
 export default function DaysInMonth({
   navigationDate,
   onSelectActiveDate,
+  onDeleteReminders,
 }: Props): React.Node {
   const classes = useStyles();
   // Start day of the grid. It can be negative or zero
@@ -51,6 +53,7 @@ export default function DaysInMonth({
           date={date}
           monthIndex={navigationDate.month()}
           onSelectActiveDate={onSelectActiveDate}
+          onDeleteReminders={onDeleteReminders}
         />
       </div>,
     );
