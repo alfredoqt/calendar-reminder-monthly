@@ -1,0 +1,64 @@
+# Tests and builds the React app, and deploys it to Firebase hosting
+name: Build Pipeline
+
+on:
+  # Trigger the pipeline only on pushes to main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    # Installs packages and build SPA React application
+
+    runs-on: ubuntu-latest
+
+    # In case we want to create multiple jobs with different node versions
+    # We'll be using only one for this exercice
+    # strategy:
+    #   matrix:
+    #
+    #     node-version: [8.x, 10.x, 12.x]
+
+    steps:
+    # Checks out the repository and downloads it to the job runner
+    # Required to run actions against the code
+    - uses: actions/checkout@v2
+    
+    - name: Use Node.js 12.x
+      # Installs node into the runner
+      uses: actions/setup-node@v1
+      with:
+        # We only care about this version for this exercise
+        node-version: '12.x'
+    - name: Cache Node.js modules
+      # Caches the node modules so we don't install them every time
+      # we trigger this workflow
+      uses: actions/cache@v2
+      with:
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm 
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-
+    - name: Install dependencies
+      # Use this instead of npm install. This takes the versions from package-lock.json
+      # and prevents updates to it.
+      run: npm ci
+    - name: Test code
+      run: npm run test
+      # Not necessary to set CI to true, GitHub Actions now does it by default
+    - name: Run React build
+      # Builds the React SPA
+      run: |
+        npm run build --if-present
+      env:
+        REACT_APP_MAPS_API_KEY: ${{secrets.REACT_APP_MAPS_API_KEY}}
+        REACT_APP_OPEN_WEATHER_API_KEY: ${{secrets.REACT_APP_OPEN_WEATHER_API_KEY}}
+    - name: Deploy to Firebase hosting
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
