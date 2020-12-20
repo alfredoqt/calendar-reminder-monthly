@@ -56,6 +56,8 @@ export default function WeatherOnCity({
       }
     }
     fetchForecast();
+    // Used to avoid a bug
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [city, selectedDate]);
   return (
     <div>

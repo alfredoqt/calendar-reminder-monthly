@@ -149,7 +149,13 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
 
   useEffect(() => {
     if (selectedDate != null) {
-      setFields({...fields, date: selectedDate.hour(0).minute(0).second(0)});
+      setFields({
+        city: null,
+        forecast: null,
+        name: '',
+        color: REMINDER_COLORS.blue,
+        date: selectedDate.hour(0).minute(0).second(0),
+      });
     } else if (selectedReminder != null) {
       setFields({
         city: selectedReminder.city,
@@ -177,7 +183,7 @@ export default function ReminderDialog({open, onClose}: Props): React.Node {
       dispatch(removeReminder(selectedReminder.id));
       handleClose();
     }
-  }, [dispatch, selectedReminder]);
+  }, [dispatch, selectedReminder, handleClose]);
 
   // useCallback unnecessary due to repetitive memoized function creation
   const onSave = () => {
