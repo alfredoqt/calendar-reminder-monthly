@@ -1,12 +1,17 @@
 // @flow
 
 import * as React from 'react';
+import {useCallback} from 'react';
 import dayjs from 'dayjs';
 import {makeStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import {isWeekend} from 'utils/dates';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import FlexLayout from 'components/shared/FlexLayout.react';
+import useSortedRemindersInDay from 'stores/hooks/useSortedRemindersInDay';
+import RemindersList from 'components/calendar/RemindersList.react';
+import {useDispatch} from 'stores/hooks/CalendarStoreHooks';
+import {setSelectedReminder} from 'actions/CalendarCurrentReminderDataActions';
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -49,6 +54,16 @@ type Props = $ReadOnly<{
 
 export default function Day({date, monthIndex, onSelectActiveDate}: Props): React.Node {
   const classes = useStyles({date, monthIndex});
+  const reminders = useSortedRemindersInDay(date);
+  const dispatch = useDispatch();
+
+  const onSelect = useCallback(
+    (reminder) => {
+      dispatch(setSelectedReminder(reminder));
+    },
+    [dispatch],
+  );
+
   return (
     <ButtonBase className={classes.root} onClick={() => onSelectActiveDate(date)}>
       <FlexLayout className={classes.layout} direction="vertical">
@@ -57,9 +72,11 @@ export default function Day({date, monthIndex, onSelectActiveDate}: Props): Reac
           variant="subtitle2"
           align="right"
           color="inherit"
+          gutterBottom
         >
           {date.date()}
         </Typography>
+        <RemindersList reminders={reminders.toArray()} onSelect={onSelect} />
       </FlexLayout>
     </ButtonBase>
   );

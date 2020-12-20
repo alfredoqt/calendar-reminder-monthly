@@ -13,7 +13,11 @@ type Props = $ReadOnly<{
   onChange: (date: dayjs.Dayjs) => void,
 }>;
 
-export default function ReminderTimeSelect({value, selectedDate, onChange}: Props) {
+export default function ReminderTimeSelect({
+  value,
+  selectedDate,
+  onChange,
+}: Props): React.Node {
   const dates = generateDatesInIntervals(selectedDate, 30, 48, 'minute');
   return (
     <TextField

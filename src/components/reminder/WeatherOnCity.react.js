@@ -7,7 +7,6 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 import dayjs from 'dayjs';
 import {fetchForecastForDate, getIconSrc} from 'utils/forecast';
-import nullthrows from 'utils/nullthrows';
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import FlexLayout from 'components/shared/FlexLayout.react';
